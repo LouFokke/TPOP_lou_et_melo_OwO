@@ -20,7 +20,7 @@ try:
         raise ValueError(f"Échec du téléchargement : Code {response.status_code}")
 
     # Lire le contenu avec pandas en précisant le séparateur
-    data = pd.read_csv(io.StringIO(response.text), sep=';')
+    data = pd.read_csv(io.StringIO(response.text), sep=',')
 
     # Vérifier si le DataFrame est vide
     if data.empty:
