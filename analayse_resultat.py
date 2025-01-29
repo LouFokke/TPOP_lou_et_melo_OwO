@@ -4,8 +4,8 @@ import requests
 import io
 
 # URL du fichier CSV
-url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_fibreuse/"
-fichier_csv = "donnee_monomode.csv"  # choix entre "big_multimode.csv", "donnee_monomode.csv" ou "leger_multimode.csv"
+url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_diffrac/"
+fichier_csv = "Diffraction (1 fente).csv"  
 
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
