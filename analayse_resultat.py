@@ -5,7 +5,7 @@ import io
 
 # URL du fichier CSV
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_diffrac/"
-fichier_csv = "Diffraction (1 fente).csv"  
+fichier_csv = "2 Fentes.csv"  
 
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
@@ -48,7 +48,7 @@ try:
     # Ajouter des labels
     ax1.set_xlabel("Position [cm]")
     ax1.set_ylabel("Intensité lumineuse normalisée []")
-    ax1.set_title(f"Graphique d'un patron de diffraction")
+    ax1.set_title(f"Graphique d'un patron de diffraction/interférence")
 
     # Ajouter une légende
     ax1.legend(title="Légende")
