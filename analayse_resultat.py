@@ -43,15 +43,15 @@ try:
         y = data[y_col]
         
         # Tracer la courbe
-        ax1.plot(x, y, label=f"{x_col} vs {y_col}")
+        ax1.plot(x, y, label=f"Intensité lumineuse en fonction de la position")
 
     # Ajouter des labels
-    ax1.set_xlabel("Valeur X")
-    ax1.set_ylabel("Valeur Y")
-    ax1.set_title(f"Graphique des courbes - {fichier_csv}")
+    ax1.set_xlabel("Position [cm]")
+    ax1.set_ylabel("Intensité lumineuse normalisée []")
+    ax1.set_title(f"Graphique d'un patron de diffraction")
 
     # Ajouter une légende
-    ax1.legend(title="Courbes")
+    ax1.legend(title="Légende")
 
     # Afficher le graphique
     plt.tight_layout()
