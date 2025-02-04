@@ -8,17 +8,21 @@ url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/d
 fichier_csv = "fente_analyse.csv"  
 fichier_csv2 = "Rond_analyse.csv"
 
-file_path = url + fichier_csv
-print(f"Téléchargement des données depuis : {file_path}")
+print(f"Téléchargement des données depuis : {url}")
 
 try:
     # Télécharger le fichier CSV
-    response = requests.get(file_path)
+    response = requests.get(url + fichier_csv)
     if response.status_code != 200:
         raise ValueError(f"Échec du téléchargement : Code {response.status_code}")
 
     # Lire le CSV avec pandas
     data = pd.read_csv(io.StringIO(response.text), sep=',', encoding='utf-8')
+    data = data.apply(pd.to_numeric, errors='coerce')
+    if data.empty:
+        raise ValueError("Le fichier CSV est vide ou mal chargé.")
+
+
 
     response2 = requests.get(url + fichier_csv2)
     if response2.status_code != 200:
@@ -31,23 +35,20 @@ try:
 
 
 
-    # Vérifier le fichier
-    print("Aperçu des données :")
+    # Vérifier les fichiers
+    print("Aperçu des données 1:")
     print(data.head())
 
-    # Convertir les colonnes en numériques pour éviter les erreurs
-    data = data.apply(pd.to_numeric, errors='coerce')
+    print("Aperçu des données 2:")
+    print(data2.head())
 
-    # Vérifier si le fichier est vide
-    if data.empty:
-        raise ValueError("Le fichier CSV est vide ou mal chargé.")
 
     # Initialisation de l'objet figure
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
     # Parcourir toutes les colonnes par paires X-Y
     for i in range(0, len(data.columns), 2):
-        x_col = data.columns[i]  # Colonne X
+        x_col = data.columns[i]      # Colonne X
         y_col = data.columns[i + 1]  # Colonne Y
         
         # Récupérer les données pour chaque paire X-Y
@@ -55,13 +56,20 @@ try:
         y = data[y_col]
         
         # Tracer la courbe
-        ax1.plot(x, y, label=f"Patron de 2 fentes (a=0.04, d=0.25)")
+        ax1.plot(x, y, label=f"Patron de diffraction de la fente")
+
+
+    # Parcourir toutes les colonnes par paires X-Y
     for i in range(0, len(data2.columns), 2):
-        x_col2 = data2.columns[i]  
-        y_col2 = data2.columns[i + 1]  
+        x_col2 = data2.columns[i]      # Colonne X
+        y_col2 = data2.columns[i + 1]  # Colonne Y
+
+        # Récupérer les données pour chaque paire X-Y  
         x2 = data2[x_col2]
         y2 = data2[y_col2]
-        ax1.plot(x2, y2, label=f"Patron d'une fente (a=0.04)")
+
+        # Tracer la courbe
+        ax1.plot((x2+16)*1.25, y2, label=f"Patron de diffraction de l'ouverture circulaire")
 
 
     # Ajouter des labels
