@@ -1,11 +1,11 @@
+import io
+import requests
 import pandas as pd
 import matplotlib.pyplot as plt
-import requests
-import io
 
 # URL du fichier CSV
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_glendu/"
-fichier_csv = "analayse_glendu.csv"  
+fichier_csv = "D_Loi_de_malus.csv"  
 
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
@@ -17,18 +17,7 @@ try:
         raise ValueError(f"Échec du téléchargement : Code {response.status_code}")
 
     # Lire le CSV avec pandas
-    data = pd.read_csv(io.StringIO(response.text), sep=',', encoding='utf-8')
-
-    response2 = requests.get(url + fichier_csv2)
-    if response2.status_code != 200:
-        raise ValueError(f"Échec du téléchargement : Code {response2.status_code}")
-
-    data2 = pd.read_csv(io.StringIO(response2.text), sep=',', encoding='utf-8')
-    data2 = data2.apply(pd.to_numeric, errors='coerce')
-    if data2.empty:
-        raise ValueError("Le deuxième fichier CSV est vide ou mal chargé.")
-
-
+    data = pd.read_csv(io.StringIO(response.text), sep=';', encoding='utf-8')
 
     # Vérifier le fichier
     print("Aperçu des données :")
@@ -46,6 +35,9 @@ try:
 
     # Parcourir toutes les colonnes par paires X-Y
     for i in range(0, len(data.columns), 2):
+        if i + 1 >= len(data.columns):
+            raise ValueError("Le nombre de colonnes n'est pas pair.")
+        
         x_col = data.columns[i]  # Colonne X
         y_col = data.columns[i + 1]  # Colonne Y
         
@@ -53,20 +45,18 @@ try:
         x = data[x_col]
         y = data[y_col]
         
+        # Vérifier les données
+        print(f"Colonne X : {x_col}")
+        print(f"Colonne Y : {y_col}")
+        print(f"Données X : {x}")
+        print(f"Données Y : {y}")
+        
         # Tracer la courbe
-        ax1.plot(x, y, label=f"Patron de 2 fentes (a=0.04, d=0.25)")
-    for i in range(0, len(data2.columns), 2):
-        x_col2 = data2.columns[i]  
-        y_col2 = data2.columns[i + 1]  
-        x2 = data2[x_col2]
-        y2 = data2[y_col2]
-        ax1.plot(x2, y2, label=f"Patron d'une fente (a=0.04)")
-
+        ax1.plot(x, y, label=f"Mesurés en laboratoire")
 
     # Ajouter des labels
-    ax1.set_xlabel("Position [cm]")
-    ax1.set_ylabel("Intensité lumineuse normalisée []")
-    ax1.set_title(f"Graphique d'un patron de diffraction/interférence")
+    ax1.set_xlabel("Angle du polariseur [°]")
+    ax1.set_ylabel("Intensité lumineuse []")
 
     # Ajouter une légende
     ax1.legend(title="Légende")
