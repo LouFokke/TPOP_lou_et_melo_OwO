@@ -87,7 +87,7 @@ try:
     
     # Ajouter des labels
     ax1.set_xlabel("Angle du polariseur [°]")
-    ax1.set_ylabel("Intensité lumineuse []")
+    ax1.set_ylabel("Intensité lumineuse [μA]")
     ax1.set_title("")
     
     # Ajouter une légende
