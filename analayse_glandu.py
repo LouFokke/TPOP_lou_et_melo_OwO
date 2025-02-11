@@ -75,7 +75,7 @@ try:
         print(f"R² = {r_squared:.4f}")
         
         # Tracer les données expérimentales
-        ax1.plot(x, y, '.', label=f"Données expérimentales")
+        ax1.plot(x, y, 'o', label=f"Données expérimentales")
         
         # Tracer la courbe ajustée
         x_fit = np.linspace(min(x), max(x), 500)  # Générer des points pour une courbe lisse
