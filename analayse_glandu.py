@@ -52,7 +52,7 @@ try:
         print(f"Données Y : {y}")
         
         # Tracer la courbe
-        ax1.plot(x, y, label=f"Mesurés en laboratoire")
+        ax1.plot(x, y, ".",label=f"Mesurés en laboratoire",)
 
     # Ajouter des labels
     ax1.set_xlabel("Angle du polariseur [°]")
