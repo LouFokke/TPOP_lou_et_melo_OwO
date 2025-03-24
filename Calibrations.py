@@ -20,8 +20,8 @@ def calculate_r_squared(y_true, y_pred):
     return r_squared
 
 # URL du fichier CSV
-url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_glendu/"
-fichier_csv = "D_Loi_de_malus.csv"
+url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/Donnees_proj_1/"
+fichier_csv = "Sans_calibration.csv"
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
 
