@@ -8,9 +8,9 @@ from scipy.optimize import curve_fit
 # Augmenter la taille globale de la police (par défaut environ 10, ici on passe à 20)
 plt.rcParams.update({'font.size': 20})
 
-# Fonction à ajuster (loi de Malus : I = I0 * cos²(θ - θ0))
-def malus_law(theta, I0, theta0):
-    return I0 * np.cos(np.radians(theta - theta0)) ** 2
+# Fonction à ajuster (loi de Malus : I = k0 * cos²(θ - θ0))
+def eq_chaleur(k, b):
+    return k * (x ** 4) + b
 
 # Fonction pour calculer R²
 def calculate_r_squared(y_true, y_pred):
@@ -53,8 +53,8 @@ try:
         if i + 1 >= len(data.columns):
             raise ValueError("Le nombre de colonnes n'est pas pair.")
         
-        x_col = data.columns[i]  # Colonne X (angle)
-        y_col = data.columns[i + 1]  # Colonne Y (intensité)
+        x_col = data.columns[i]  # Colonne X (temp)
+        y_col = data.columns[i + 1]  # Colonne Y (Adu)
         
         # Récupérer les données pour chaque paire X-Y
         x = data[x_col]
@@ -67,11 +67,11 @@ try:
         print(f"Données Y : {y}")
         
         # Curve fitting : ajuster la loi de Malus aux données
-        popt, pcov = curve_fit(malus_law, x, y, p0=[max(y), 0])  # p0 : estimations initiales
-        I0, theta0 = popt  # Paramètres optimisés
+        popt, pcov = curve_fit(eq_chaleur, x, y, p0=[max(y), 0])  # p0 : estimations initiales
+        k0, b0 = popt  # Paramètres optimisés
         
         # Calculer les valeurs prédites par le modèle
-        y_pred = malus_law(x, *popt)
+        y_pred = eq_chaleur(x, *popt)
         
         # Calculer R²
         r_squared = calculate_r_squared(y, y_pred)
@@ -82,12 +82,12 @@ try:
         
         # Tracer la courbe ajustée
         x_fit = np.linspace(min(x), max(x), 500)  # Générer des points pour une courbe lisse
-        y_fit = malus_law(x_fit, *popt)  # Calculer les valeurs ajustées
+        y_fit = eq_chaleur(x_fit, *popt)  # Calculer les valeurs ajustées
         ax1.plot(x_fit, y_fit, '--', label=f"Loi de Malus, R² = {r_squared:.3f}")
     
     # Ajouter des labels
-    ax1.set_xlabel("Angle du polariseur [°]")
-    ax1.set_ylabel("Intensité lumineuse [μA]")
+    ax1.set_xlabel("Température [°C]")
+    ax1.set_ylabel("Intensité lumineuse moyenne de la zone [Adu]")
     ax1.set_title("")
     
     # Ajouter une légende
