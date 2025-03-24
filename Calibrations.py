@@ -5,23 +5,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
-# Augmenter la taille globale de la police (par défaut environ 10, ici on passe à 20)
+# Augmenter la taille globale de la police
 plt.rcParams.update({'font.size': 20})
 
-# Fonction à ajuster (loi de Malus : I = k0 * cos²(θ - θ0))
-def eq_chaleur(k, b):
-    return k * (x ** 4) + b
+# Fonction à ajuster
+def eq_chaleur(x, k, c, b):
+    return k ** (x + c) + b
 
 # Fonction pour calculer R²
 def calculate_r_squared(y_true, y_pred):
-    ss_res = np.sum((y_true - y_pred) ** 2)  # Somme des carrés des résidus
-    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)  # Somme totale des carrés
-    r_squared = 1 - (ss_res / ss_tot)  # Coefficient de détermination R²
-    return r_squared
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+    return 1 - (ss_res / ss_tot)
 
 # URL du fichier CSV
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/Donnees_proj_1/"
-fichier_csv = "Sans_calibration.csv"
+fichier_csv = "calibration_custom.csv"
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
 
@@ -38,7 +37,7 @@ try:
     print("Aperçu des données :")
     print(data.head())
 
-    # Convertir les colonnes en numériques pour éviter les erreurs
+    # Convertir les colonnes en numériques
     data = data.apply(pd.to_numeric, errors='coerce')
 
     # Vérifier si le fichier est vide
@@ -53,27 +52,20 @@ try:
         if i + 1 >= len(data.columns):
             raise ValueError("Le nombre de colonnes n'est pas pair.")
         
-        x_col = data.columns[i]  # Colonne X (temp)
-        y_col = data.columns[i + 1]  # Colonne Y (Adu)
+        x_col = data.columns[i]
+        y_col = data.columns[i + 1]
         
-        # Récupérer les données pour chaque paire X-Y
         x = data[x_col]
         y = data[y_col]
         
-        # Vérifier les données
-        print(f"Colonne X : {x_col}")
-        print(f"Colonne Y : {y_col}")
-        print(f"Données X : {x}")
-        print(f"Données Y : {y}")
+        # Normalisation de x pour éviter des valeurs trop grandes
+        x_norm = x / max(x)
         
-        # Curve fitting : ajuster la loi de Malus aux données
-        popt, pcov = curve_fit(eq_chaleur, x, y, p0=[max(y), 0])  # p0 : estimations initiales
-        k0, b0 = popt  # Paramètres optimisés
+        # Ajustement de la courbe
+        popt, pcov = curve_fit(eq_chaleur, x_norm, y, p0=[1, 0, min(y)])
         
-        # Calculer les valeurs prédites par le modèle
-        y_pred = eq_chaleur(x, *popt)
-        
-        # Calculer R²
+        # Calcul des valeurs ajustées
+        y_pred = eq_chaleur(x_norm, *popt)
         r_squared = calculate_r_squared(y, y_pred)
         print(f"R² = {r_squared:.4f}")
         
@@ -81,14 +73,13 @@ try:
         ax1.plot(x, y, 'o', label="Données expérimentales")
         
         # Tracer la courbe ajustée
-        x_fit = np.linspace(min(x), max(x), 500)  # Générer des points pour une courbe lisse
-        y_fit = eq_chaleur(x_fit, *popt)  # Calculer les valeurs ajustées
-        ax1.plot(x_fit, y_fit, '--', label=f"Loi de Malus, R² = {r_squared:.3f}")
+        x_fit_norm = np.linspace(min(x_norm), max(x_norm), 500)
+        y_fit = eq_chaleur(x_fit_norm, *popt)
+        ax1.plot(x_fit_norm * max(x), y_fit, '--', label=f"Modèle théorique, R² = {r_squared:.3f}")
     
     # Ajouter des labels
     ax1.set_xlabel("Température [°C]")
     ax1.set_ylabel("Intensité lumineuse moyenne de la zone [Adu]")
-    ax1.set_title("")
     
     # Ajouter une légende
     ax1.legend(title="Légende")
