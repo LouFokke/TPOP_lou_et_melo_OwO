@@ -9,8 +9,8 @@ from scipy.optimize import curve_fit
 plt.rcParams.update({'font.size': 20})
 
 # Fonction à ajuster
-def eq_chaleur(x, k, c, b):
-    return k ** (x + c) + b
+def eq_chaleur(x, m, b, c):
+    return np.log(np.maximum(x + b, 1e-6)) / np.log(m) + c  # Évite log(0) ou log(négatif)
 
 # Fonction pour calculer R²
 def calculate_r_squared(y_true, y_pred):
@@ -20,7 +20,7 @@ def calculate_r_squared(y_true, y_pred):
 
 # URL du fichier CSV
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/Donnees_proj_1/"
-fichier_csv = "calibration_custom.csv"
+fichier_csv = "Sans_calibration.csv"
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
 
@@ -47,46 +47,56 @@ try:
     # Initialisation de l'objet figure
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
-    # Parcourir toutes les colonnes par paires X-Y
+    # Parcourir toutes les colonnes par paires Y-X (inversion de l'ordre)
     for i in range(0, len(data.columns), 2):
         if i + 1 >= len(data.columns):
             raise ValueError("Le nombre de colonnes n'est pas pair.")
-        
-        x_col = data.columns[i]
-        y_col = data.columns[i + 1]
-        
-        x = data[x_col]
-        y = data[y_col]
-        
-        # Normalisation de x pour éviter des valeurs trop grandes
-        x_norm = x / max(x)
-        
+
+        y_col = data.columns[i]
+        x_col = data.columns[i + 1]
+
+        y = data[y_col].dropna()
+        x = data[x_col].dropna()
+
+        # Normalisation de x
+        x_min = np.min(x)
+        x_shifted = x - x_min + 1e-6  # Décale x pour éviter les valeurs négatives
+
         # Ajustement de la courbe
-        popt, pcov = curve_fit(eq_chaleur, x_norm, y, p0=[1, 0, min(y)])
-        
+        popt, pcov = curve_fit(eq_chaleur, x_shifted, y, p0=[2, 1, 0],
+                               bounds=([1, -x_min + 1e-6, -np.inf], [np.inf, np.inf, np.inf]))
+
         # Calcul des valeurs ajustées
-        y_pred = eq_chaleur(x_norm, *popt)
+        y_pred = eq_chaleur(x_shifted, *popt)
         r_squared = calculate_r_squared(y, y_pred)
         print(f"R² = {r_squared:.4f}")
-        
+
         # Tracer les données expérimentales
-        ax1.plot(x, y, 'o', label="Données expérimentales")
-        
+        ax1.plot(x, y, 'o', label=f"Données exp. {y_col} vs {x_col}")
+
         # Tracer la courbe ajustée
-        x_fit_norm = np.linspace(min(x_norm), max(x_norm), 500)
-        y_fit = eq_chaleur(x_fit_norm, *popt)
-        ax1.plot(x_fit_norm * max(x), y_fit, '--', label=f"Modèle théorique, R² = {r_squared:.3f}")
-    
+        x_fit = np.linspace(min(x), max(x), 500)
+        y_fit = eq_chaleur(x_fit - x_min + 1e-6, *popt)
+        ax1.plot(x_fit, y_fit, '--', label=f"Modèle ({y_col}) R² = {r_squared:.3f}")
+
+        # Affichage de la formule corrigée sur le graphique
+        equation_text = f"$y = \log_{{{popt[0]:.3f}}}(x - {x_min:.3f} + {popt[1]:.3f}) + {popt[2]:.3f}$"
+        ax1.text(0.05, 0.95 - 0.1 * (i // 2), equation_text, transform=ax1.transAxes, fontsize=16,
+                 verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="white"))
+
     # Ajouter des labels
-    ax1.set_xlabel("Température [°C]")
-    ax1.set_ylabel("Intensité lumineuse moyenne de la zone [Adu]")
-    
+    ax1.set_xlabel("Variable X")
+    ax1.set_ylabel("Variable Y")
+
     # Ajouter une légende
     ax1.legend(title="Légende")
-    
+
     # Afficher le graphique
     plt.tight_layout()
     plt.show()
+
+    # Affichage de l'équation ajustée dans la console
+    print(f"Équation ajustée : y = log_({popt[0]:.3f})(x - {x_min:.3f} + {popt[1]:.3f}) + {popt[2]:.3f}")
 
 except Exception as e:
     print(f"Erreur : {e}")
