@@ -8,7 +8,7 @@ import io
 # -------------------------------
 # URL de base et nom du fichier à télécharger
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/refs/heads/main/Labo1/analyse_image/"
-fichier_txt = "Reslice_of_5_pli_1.txt"
+fichier_txt = "Reslice_of_3_pli_2.txt"
 path = url + fichier_txt
 
 print(f"Téléchargement des données depuis : {path}")
