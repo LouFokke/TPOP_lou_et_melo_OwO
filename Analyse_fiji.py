@@ -8,8 +8,8 @@ import io
 # -------------------------------
 # Chemin vers ton fichier de données.
 # URL du fichier CSV
-url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_diffrac/"
-fichier_txt = ""
+url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/Labo1/Fig/Reslice/"
+fichier_txt = "Reslice_of_0_sans_def_01"
 
 print(f"Téléchargement des données depuis : {url}")
 
