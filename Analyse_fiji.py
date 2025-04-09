@@ -8,7 +8,7 @@ import io
 # -------------------------------
 # URL de base et nom du fichier à télécharger
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/refs/heads/main/Labo1/analyse_image/"
-fichier_txt = "Reslice_of_0_sans_def_01.txt"
+fichier_txt = "Reslice_of_5_pli_1.txt"
 path = url + fichier_txt
 
 print(f"Téléchargement des données depuis : {path}")
@@ -19,32 +19,40 @@ if response.status_code != 200:
     raise ValueError(f"Échec du téléchargement : Code {response.status_code}")
 
 # Charger le fichier texte directement depuis la réponse HTTP
-# On utilise io.StringIO pour traiter le contenu textuel
 data = np.loadtxt(io.StringIO(response.text))
 
-# Noms des axes et titre du graphique.
-x_label = "Position "
-y_label = "Intensité"
-title   = "Courbes d'intensité en fonction de la position (temps empilé)"
+# ================================
+# Normalisation des données
+# -------------------------------
+# Normaliser l'intensité pour que toutes les valeurs soient entre 0 et 1 (min-max normalization)
+data_min = data.min()
+data_max = data.max()
+data_norm = (data - data_min) / (data_max - data_min)
+
+# Préparation de l'axe des positions normalisé
+# L'axe des positions va de 0 à 1
+n_time, n_position = data_norm.shape
+positions = np.linspace(0, 1, n_position)
+
+# ================================
+# Paramètres du graphique
+x_label = "Position (normalisée)"
+y_label = "Intensité (normalisée)"
+title   = "Courbes normalisées d'intensité vs position (temps empilé)"
 # ================================
 
-# Dimensions du tableau : nombre d'images (temps) et nombre de positions
-n_time, n_position = data.shape
 print(f"Nombre d'images (temps) : {n_time}, Nombre de positions : {n_position}")
-
-# Préparation de l'axe des positions
-positions = np.arange(n_position)
 
 # Créer la figure pour le graphique
 plt.figure(figsize=(10, 6))
 
-# Tracer chaque courbe correspondant à une ligne de données (chaque temps)
+# Tracer chaque courbe normalisée correspondant à une ligne de données (chaque temps)
 for t in range(n_time):
-    plt.plot(positions, data[t, :], color='black', alpha=0.3)  # Ajuste alpha pour la transparence
+    plt.plot(positions, data_norm[t, :], color='black', alpha=0.3)  # Ajuste alpha pour la transparence
 
 # Optionnel : tracer la courbe moyenne en rouge
-moyenne = np.mean(data, axis=0)
-plt.plot(positions, moyenne, color='red', lw=2, label="Courbe moyenne")
+moyenne_norm = np.mean(data_norm, axis=0)
+plt.plot(positions, moyenne_norm, color='red', lw=2, label="Courbe moyenne")
 
 # Personnaliser le graphique
 plt.xlabel(x_label)
