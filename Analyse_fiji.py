@@ -8,8 +8,8 @@ import io
 # -------------------------------
 # Chemin vers ton fichier de données.
 # URL du fichier CSV
-url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/data_base_diffrac/"
-fichier_txt = ""
+url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/Labo1/Fig/Reslice/"
+fichier_txt = "Reslice_of_0_sans_def_01"
 
 print(f"Téléchargement des données depuis : {url}")
 
@@ -19,14 +19,14 @@ if response.status_code != 200:
     raise ValueError(f"Échec du téléchargement : Code {response.status_code}")
 
 # Noms des axes et titre du graphique.
-x_label = "Position sur la ligne (pixels)"
+x_label = "Position (pixels)"
 y_label = "Intensité"
 title    = "Courbes d'intensité en fonction de la position (temps empilé)"
 # ================================
 
 # Charger le fichier texte contenant la matrice d'intensités.
 # Chaque ligne correspond à une image (un temps) et chaque colonne à la position sur la ligne.
-data = np.loadtxt(filename)
+data = np.loadtxt(fichier_txt)
 
 # Dimensions du tableau : nombre d'images et nombre de positions
 n_time, n_position = data.shape
