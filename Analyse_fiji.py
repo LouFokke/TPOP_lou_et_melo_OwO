@@ -9,7 +9,7 @@ from scipy.optimize import least_squares
 # ==============================================================================
 # Modifier ici le nom et l'URL du premier fichier
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/refs/heads/main/Labo1/analyse_image/"
-nom_fichier_1 = "Reslice of 0_sans_def_01.txt"
+nom_fichier_1 = "Reslice of Brass_sans_def.txt"
 chemin_fichier_1 = url + nom_fichier_1
 print(f"Téléchargement des données depuis : {chemin_fichier_1}")
 
@@ -45,7 +45,7 @@ plt.show()
 # SECTION 3 : Acquisition et Prétraitement du Fichier 2
 # ==============================================================================
 # Modifier ici le nom du deuxième fichier
-nom_fichier_2 = "Reslice of 5_pli_1.txt"
+nom_fichier_2 = "Reslice of Brass_thight_hole_1.txt"
 chemin_fichier_2 = url + nom_fichier_2
 print(f"Téléchargement des données depuis : {chemin_fichier_2}")
 
