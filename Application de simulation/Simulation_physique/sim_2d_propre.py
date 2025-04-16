@@ -28,7 +28,8 @@ class ThermalSimulation:
         self.k = self.params['material_properties']['k']       # Conductivité thermique [W/m·K]
         self.rho = self.params['material_properties']['rho']   # Densité [kg/m^3]
         self.cp = self.params['material_properties']['cp']     # Chaleur spécifique [J/kg·K]
-        self.alpha = self.k / (self.rho * self.cp)             # Diffusivité thermique [m^2/s]
+        self.alphanormal = self.k / (self.rho * self.cp)             # Diffusivité thermique [m^2/s]
+        self.diff_de_densite = 0.70
         
         # Définition de la résolution (nombre d'éléments sur le côté le plus petit)
         self.resolution = self.params['simulation_parameters']['res_spatiale']
@@ -43,7 +44,26 @@ class ThermalSimulation:
             self.Nx = round(self.Lx_phys / self.dx)
             self.Ny = self.resolution
 
+        #définir rho comme une matrice
+        self.rhomatrice = np.ones((self.Ny,self.Nx)) * self.rho
+        #self.rhomatrice = np.full((self.Ny, self.Nx), self.rho)
+
+        for i in prange(round((self.Ny/2)-1), round((self.Ny/2))+1):
+            for j in prange(1, self.Nx-1):
+                self.rhomatrice[i,j] = self.rho * self.diff_de_densite
         
+        #définir alpha comme une matrice
+        #self.alphamatrice = np.ones((self.Ny,self.Nx))
+        self.alphamatrice = np.full((self.Ny, self.Nx), self.alphanormal)
+        self.alphamodif = self.k / (self.rho * self.diff_de_densite * self.cp)
+
+        for i in prange(round((self.Ny/2)-1), round((self.Ny/2))+1):
+            for j in prange(1, self.Nx-1):
+                self.alphamatrice[i,j] = self.alphamodif
+
+        
+        
+
         print(f"nx = {self.Nx}, ny = {self.Ny}, dx = dy = {self.dx}")
         
         # Paramètres de convection
@@ -110,16 +130,18 @@ class ThermalSimulation:
         self.P_mouse = np.zeros((self.Ny, self.Nx))
 
         # Calcul du pas temporel
-        dt_y = self.dy ** 2 / (8 * self.alpha)
-        dt_x = self.dx ** 2 / (8 * self.alpha)
-        self.dt = min([dt_x, dt_y])
+        dt_y_normal = self.dy ** 2 / (8 * self.alphanormal)
+        dt_x_normal = self.dx ** 2 / (8 * self.alphanormal)
+        dt_y_modifier = self.dy ** 2 / (8 * self.alphamodif)
+        dt_x_modifier = self.dx ** 2 / (8 * self.alphamodif)
+        self.dt = min([dt_x_normal, dt_y_normal, dt_y_modifier, dt_x_modifier])
         print(f"Pas temporel choisi (dt): {self.dt}")
 
         self.TEC_momment_inversion = ToggleManager(self.params['TEC']['TEC_momment_inversion'], self.dt)  # Temps d'activation de la source
         self.PERTU_momment_inversion = ToggleManager(self.params['perturbation_properties']['PERTU_momment_inversion'], self.dt)  # Temps d'activation de la source
 
         # Initialisation de la température
-        self.T_piece = self.params['boundary_conditions']['T_piece']
+        self.T_piece = 30 #self.params['boundary_conditions']['T_piece']
         T_init = np.full((self.Ny, self.Nx), self.T_piece, dtype=np.float64) # Tableau de température (lignes = y, colonnes = x)
 
         # État initial de la simulation
@@ -167,7 +189,7 @@ class ThermalSimulation:
         self.line1, = self.ax[1].plot([], [], label="Thermistance 1")
         self.line2, = self.ax[1].plot([], [], label="Thermistance 2")
         self.line3, = self.ax[1].plot([], [], label="Thermistance 3")
-        self.ax[1].set_xlim(0, 1000) # Axe du temps
+        self.ax[1].set_xlim(0, 150) # Axe du temps
         self.ax[1].set_xlabel("Temps (s)")
         self.ax[1].set_ylabel("Température (°C)")
         self.ax[1].legend()
@@ -189,9 +211,9 @@ class ThermalSimulation:
         dummy_T = self.state["T"].copy()
         dummy_T_new = self.state["T_new"].copy()
         _ = self._update_temperature(
-            dummy_T, dummy_T_new, self.alpha, self.dt, self.dx, self.dy,
+            dummy_T, dummy_T_new, self.alphamatrice, self.dt, self.dx, self.dy,
             self.P_perm, self.P_mouse, self.power_enabled,
-            self.rho, self.cp, self.h_conv, self.T_piece,
+            self.rhomatrice, self.cp, self.h_conv, self.T_piece,
             self.aire_sides_up_down, self.aire_sides_left_right, self.aire_top,
             self.volume, self.k
         )
@@ -220,10 +242,14 @@ class ThermalSimulation:
         dt_alpha = dt * alpha
         dx_dy = dx * dy
 
-        dt_alpha_dx_dy = dt_alpha / dx_dy
+        #dt_alpha_dx_dy = dt_alpha / dx_dy
 
-        dt_rho_cp = dt / (rho * cp)
-        dt_rho_cp_h_conv_volume = dt_rho_cp * h_conv / volume
+        #((dt * alpha[i,j]) / (dx * dy))
+
+        #dt_rho_cp = dt / (rho * cp)
+        #dt_rho_cp_h_conv_volume = dt_rho_cp * h_conv / volume
+
+        #((dt / (rho * cp)) * h_conv / volume)
 
         Ny, Nx = T.shape
         for i in prange(1, Ny-1):
@@ -231,39 +257,39 @@ class ThermalSimulation:
                 T_new[i, j] = T[i, j]
                 # Conditions sur les bords (exclusion des coins)
                 if (i == 1 and j > 1 and j < Nx-2):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i + 1, j] + T[i, j + 1] + T[i, j - 1] - 3 * T[i, j])
-                    T_new[i, j] += dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_up_down
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i + 1, j] + T[i, j + 1] + T[i, j - 1] - 3 * T[i, j])
+                    T_new[i, j] += ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_up_down
                 elif (i == Ny-2 and j > 1 and j < Nx-2):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i - 1, j] + T[i, j + 1] + T[i, j - 1] - 3 * T[i, j])
-                    T_new[i, j] += dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_up_down
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i - 1, j] + T[i, j + 1] + T[i, j - 1] - 3 * T[i, j])
+                    T_new[i, j] += ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_up_down
                 elif (j == 1 and i > 1 and i < Ny-2):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i + 1, j] + T[i - 1, j] + T[i, j + 1] - 3 * T[i, j])
-                    T_new[i, j] += dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_left_right
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i + 1, j] + T[i - 1, j] + T[i, j + 1] - 3 * T[i, j])
+                    T_new[i, j] += ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_left_right
                 elif (j == Nx-2 and i > 1 and i < Ny-2):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i + 1, j] + T[i - 1, j] + T[i, j - 1] - 3 * T[i, j])
-                    T_new[i, j] += dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_left_right
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i + 1, j] + T[i - 1, j] + T[i, j - 1] - 3 * T[i, j])
+                    T_new[i, j] += ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_left_right
                 elif (i == 1 and j == 1):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i + 1, j] + T[i, j + 1] - 2 * T[i, j])
-                    T_new[i, j] += 2 * dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_up_down
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i + 1, j] + T[i, j + 1] - 2 * T[i, j])
+                    T_new[i, j] += 2 * ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_up_down
                 elif (i == 1 and j == Nx-2):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i + 1, j] + T[i, j - 1] - 2 * T[i, j])
-                    T_new[i, j] += 2 * dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_up_down
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i + 1, j] + T[i, j - 1] - 2 * T[i, j])
+                    T_new[i, j] += 2 * ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_up_down
                 elif (i == Ny-2 and j == 1):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i - 1, j] + T[i, j + 1] - 2 * T[i, j])
-                    T_new[i, j] += 2 * dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_up_down
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i - 1, j] + T[i, j + 1] - 2 * T[i, j])
+                    T_new[i, j] += 2 * ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_up_down
                 elif (i == Ny-2 and j == Nx-2):
-                    T_new[i, j] += dt_alpha_dx_dy * (T[i - 1, j] + T[i, j - 1] - 2 * T[i, j])
-                    T_new[i, j] += 2 * dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * aire_sides_up_down
+                    T_new[i, j] += ((dt * alpha[i,j]) / (dx * dy)) * (T[i - 1, j] + T[i, j - 1] - 2 * T[i, j])
+                    T_new[i, j] += 2 * ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * aire_sides_up_down
                 else:
-                    T_new[i, j] += dt_rho_cp * k * (
+                    T_new[i, j] += (dt / (rho[i,j] * cp)) * k * (
                         T[i + 1, j] + T[i - 1, j] + T[i, j + 1] + T[i, j - 1] - 4 * T[i, j]
                     ) / dx_dy
 
                 # Injection (source permanente)
-                T_new[i, j] += dt_rho_cp * (P_perm[i, j] + P_mouse[i, j])
+                T_new[i, j] += (dt / (rho[i,j] * cp)) * (P_perm[i, j] + P_mouse[i, j])
 
                 # Convection sur les faces supérieures / inférieures
-                T_new[i, j] += dt_rho_cp_h_conv_volume * (T_piece - T[i, j]) * 2 * aire_top
+                T_new[i, j] += ((dt / (rho[i,j] * cp)) * h_conv / volume) * (T_piece - T[i, j]) * 2 * aire_top
 
         return T_new
 
@@ -271,7 +297,7 @@ class ThermalSimulation:
         """Fonction appelée à chaque frame de l'animation pour mettre à jour la simulation."""
         if self.stop_simulation:
             return [self.cax]
-        
+    
         T = self.state["T"]
         T_new = self.state["T_new"]
         sim_steps = self.state["simulation_steps"]
@@ -311,8 +337,8 @@ class ThermalSimulation:
 
             # Mise à jour
             T_new = self._update_temperature(
-                T, T_new, self.alpha, self.dt, self.dx, self.dy, self.P_perm, self.P_mouse,
-                self.power_enabled, self.rho, self.cp, self.h_conv, self.T_piece,
+                T, T_new, self.alphamatrice, self.dt, self.dx, self.dy, self.P_perm, self.P_mouse,
+                self.power_enabled, self.rhomatrice, self.cp, self.h_conv, 23,
                 self.aire_sides_up_down, self.aire_sides_left_right, self.aire_top,
                 self.volume, self.k
             )

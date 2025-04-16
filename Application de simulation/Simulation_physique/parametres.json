@@ -1,7 +1,7 @@
 {
     "dimensions": {
-        "Lx": 0.06159,
-        "Ly": 0.11696,
+        "Lx": 0.4,
+        "Ly": 0.5,
         "e": 0.00172
     },
     "material_properties": {
@@ -14,8 +14,8 @@
         "T_piece": 23.51
     },
     "simulation_parameters": {
-        "res_spatiale": 70,
-        "res_temporelle": 500,
+        "res_spatiale": 200,
+        "res_temporelle": 50,
         "sim_duration": 1000.0
     },
     "TEC": {
@@ -23,7 +23,7 @@
         "Ly_source": 0.015,
         "x_source": 0.030795,
         "y_source": 0.023392,
-        "courant": 1.0,
+        "courant": 0.0,
         "couplage": 1.0,
         "TEC_momment_inversion": [
             0.0
@@ -38,11 +38,11 @@
         ]
     },
     "thermistances": {
-        "pos_t1_x": 0.03107,
-        "pos_t1_y": 0.01485,
-        "pos_t2_x": 0.03107,
-        "pos_t2_y": 0.06035,
-        "pos_t3_x": 0.03107,
-        "pos_t3_y": 0.10527
+        "pos_t1_x": 0.2,
+        "pos_t1_y": 0.4,
+        "pos_t2_x": 0.2,
+        "pos_t2_y": 0.25,
+        "pos_t3_x": 0.2,
+        "pos_t3_y": 0.1
     }
 }
