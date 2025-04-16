@@ -45,7 +45,7 @@ plt.show()
 # SECTION 3 : Acquisition et Prétraitement du Fichier 2
 # ==============================================================================
 # Modifier ici le nom du deuxième fichier
-nom_fichier_2 = "Reslice of Brass_average_hole_3.txt"
+nom_fichier_2 = "Reslice of Brass_large_hole_1.txt"
 chemin_fichier_2 = url + nom_fichier_2
 print(f"Téléchargement des données depuis : {chemin_fichier_2}")
 
