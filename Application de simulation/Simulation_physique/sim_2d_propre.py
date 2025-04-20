@@ -29,7 +29,7 @@ class ThermalSimulation:
         self.rho = self.params['material_properties']['rho']   # Densité [kg/m^3]
         self.cp = self.params['material_properties']['cp']     # Chaleur spécifique [J/kg·K]
         self.alphanormal = self.k / (self.rho * self.cp)             # Diffusivité thermique [m^2/s]
-        self.diff_de_densite = 0.70
+        self.diff_de_densite = 0.15
         
         # Définition de la résolution (nombre d'éléments sur le côté le plus petit)
         self.resolution = self.params['simulation_parameters']['res_spatiale']
@@ -141,7 +141,7 @@ class ThermalSimulation:
         self.PERTU_momment_inversion = ToggleManager(self.params['perturbation_properties']['PERTU_momment_inversion'], self.dt)  # Temps d'activation de la source
 
         # Initialisation de la température
-        self.T_piece = 30 #self.params['boundary_conditions']['T_piece']
+        self.T_piece = 150 #self.params['boundary_conditions']['T_piece']
         T_init = np.full((self.Ny, self.Nx), self.T_piece, dtype=np.float64) # Tableau de température (lignes = y, colonnes = x)
 
         # État initial de la simulation
