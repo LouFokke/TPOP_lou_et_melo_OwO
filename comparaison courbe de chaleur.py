@@ -8,7 +8,7 @@ plt.rcParams.update({'font.size': 20})
 
 # URL du fichier CSV
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/Donnees_proj_1/Donnees_de_simulation/"
-fichier_csv = "15_pourcents_difference.csv"  
+fichier_csv = "5_pourcents_difference.csv"  
 
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
