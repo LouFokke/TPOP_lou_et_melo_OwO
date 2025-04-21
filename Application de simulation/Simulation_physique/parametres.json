@@ -15,7 +15,7 @@
     },
     "simulation_parameters": {
         "res_spatiale": 200,
-        "res_temporelle": 400,
+        "res_temporelle": 800,
         "sim_duration": 300.0
     },
     "TEC": {

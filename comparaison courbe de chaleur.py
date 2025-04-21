@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 import requests
 import io
 
+# Augmenter la taille globale de la police (par défaut environ 10, ici on passe à 20)
+plt.rcParams.update({'font.size': 20})
+
 # URL du fichier CSV
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/main/DB/Donnees_proj_1/Donnees_de_simulation/"
-fichier_csv = "95_pourcents_difference.csv"  
+fichier_csv = "15_pourcents_difference.csv"  
 
 file_path = url + fichier_csv
 print(f"Téléchargement des données depuis : {file_path}")
@@ -34,7 +37,7 @@ try:
     # Tracer la première courbe (1ère et 2e colonnes)
     x = data.iloc[:, 0]  # 1ère colonne
     y = data.iloc[:, 1]  # 2e colonne
-    ax1.plot(x, y, label="Température aux extrémités de la plaque")
+    ax1.plot(x, y,'--', label="Température aux extrémités de la plaque")
 
     # Tracer la deuxième courbe (1ère et 3e colonnes)
     y2 = data.iloc[:, 2]  # 3e colonne
@@ -59,10 +62,10 @@ try:
     # Ajouter des labels
     ax1.set_xlabel("Temps [s]")
     ax1.set_ylabel("Température [°C]")
-    ax1.set_title("Comparaison de la température en deux points sur la plaque en fonction du temps")
+    ax1.set_title("Comparaison de la température en deux points en fonction du temps")
 
     # Ajouter une légende
-    ax1.legend(title=f"Légende\nDifférence max = {max_diff:.2f} °C")
+    ax1.legend(title=f"Différence max = {max_diff:.2f} °C")
 
     # Afficher le graphique
     plt.tight_layout()
