@@ -4,9 +4,6 @@ import requests
 import io
 from scipy.optimize import least_squares
 
-# Augmenter la taille globale de la police
-plt.rcParams.update({'font.size': 20})
-
 # ==============================================================================
 # SECTION 1 : Acquisition et Prétraitement des Données du Fichier 1 (Référence)
 # ==============================================================================
@@ -31,7 +28,7 @@ positions = np.linspace(0, 1, n_position)
 # ==============================================================================
 # SECTION 2 : Visualisation des Données du Fichier 1 (Référence)
 # ==============================================================================
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(17, 10))
 for t in range(n_time):
     plt.plot(positions, data_norm[t, :], color='black', alpha=0.3)
 moyenne_norm = np.mean(data_norm, axis=0)
@@ -40,16 +37,17 @@ plt.plot(positions, moyenne_norm, color='red', lw=2, label="Courbe Moyenne")
 plt.xlabel("Position (normalisée)")
 plt.ylabel("Intensité (normalisée)")
 # 🔧 Modifier ici le titre du graphique si besoin
-plt.title("Itensité de la radiation de la plaque en focntion du temps et de la position")
+plt.title("Itensité de la radiation de la plaque en focntion du temps et de la position sans déformation")
 plt.legend()
 plt.tight_layout()
 plt.show()
+
 
 # ==============================================================================
 # SECTION 3 : Acquisition et Prétraitement des Données du Fichier 2 (Déformé)
 # ==============================================================================
 # 🔧 Modifier ici le nom du fichier 2 si besoin
-nom_fichier_2 = "Reslice of 1_pli_02.txt"
+nom_fichier_2 = "Reslice of 5_pli_1.txt"
 chemin_fichier_2 = url + nom_fichier_2
 print(f"Téléchargement des données depuis : {chemin_fichier_2}")
 
@@ -74,6 +72,20 @@ print(f"Utilisation de {common_n_position} positions communes.")
 data_norm = data_norm[:, :common_n_position]
 data2_norm = data2_norm[:, :common_n_position]
 positions = np.linspace(0, 1, common_n_position)
+
+plt.figure(figsize=(17, 10))
+for t in range(n_time):
+    plt.plot(positions, data2_norm[t, :], color='black', alpha=0.3)
+moyenne2_norm = np.mean(data2_norm, axis=0)
+plt.plot(positions, moyenne2_norm, color='red', lw=2, label="Courbe Moyenne")
+
+plt.xlabel("Position (normalisée)")
+plt.ylabel("Intensité (normalisée)")
+# 🔧 Modifier ici le titre du graphique si besoin
+plt.title("Itensité de la radiation de la plaque en focntion du temps et de la position avec déformation")
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 # ==============================================================================
 # SECTION 4 : Alignement des Courbes du Fichier 2 sur le Fichier 1 (Par Paires)
@@ -129,7 +141,7 @@ for t in range(n_curve):
 # ==============================================================================
 # SECTION 5 : Visualisation par Paires des Courbes Alignées
 # ==============================================================================
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(17, 10))
 for t in range(n_curve):
     plt.plot(positions, data_norm[t, :], color='black', alpha=0.3, 
              label="Référence" if t == 0 else "")
@@ -146,7 +158,7 @@ plt.show()
 # ==============================================================================
 # SECTION 6 : Quantification des Écarts Absolus Entre Paires
 # ==============================================================================
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(17, 10))
 all_diff = []
 
 for t in range(n_curve):
