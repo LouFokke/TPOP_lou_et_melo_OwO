@@ -29,7 +29,7 @@ class ThermalSimulation:
         self.rho = self.params['material_properties']['rho']   # Densité [kg/m^3]
         self.cp = self.params['material_properties']['cp']     # Chaleur spécifique [J/kg·K]
         self.alphanormal = self.k / (self.rho * self.cp)             # Diffusivité thermique [m^2/s]
-        self.diff_de_densite = 0.05
+        self.diff_de_densite = 0.80
         
         # Définition de la résolution (nombre d'éléments sur le côté le plus petit)
         self.resolution = self.params['simulation_parameters']['res_spatiale']

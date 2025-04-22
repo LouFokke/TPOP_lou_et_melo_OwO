@@ -50,7 +50,7 @@ plt.show()
 # SECTION 3 : Acquisition et Prétraitement des Données du Fichier 2 (Déformé)
 # ==============================================================================
 # 🔧 Modifier ici le nom du fichier 2 si besoin
-nom_fichier_2 = "Reslice of Brass_thight_hole_1.txt" #ajouter un curve-fit ici au lieu d'un autre fichier texte!!!
+nom_fichier_2 = "Reslice of Brass_large_hole_1.txt" #ajouter un curve-fit ici au lieu d'un autre fichier texte!!!
 chemin_fichier_2 = url + nom_fichier_2
 print(f"Téléchargement des données depuis : {chemin_fichier_2}")
 

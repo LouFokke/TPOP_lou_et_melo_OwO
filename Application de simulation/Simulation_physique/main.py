@@ -1,10 +1,14 @@
 import matplotlib
+import matplotlib.pyplot as plt
 matplotlib.use('QtAgg')  # ou 'Qt5Agg', selon la version
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon
 from GUI.MainWindow import MainWindow
 import os
 import sys
+
+# Augmenter la taille globale de la police (par défaut environ 10, ici on passe à 20)
+plt.rcParams.update({'font.size': 20})
 
 def resource_path(relative_path):
     """Retourne le chemin absolu vers la ressource.
