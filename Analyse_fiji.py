@@ -12,7 +12,7 @@ plt.rcParams.update({'font.size': 20})
 # ==============================================================================
 # 🔧 Modifier ici le nom du fichier 1 si besoin
 url = "https://raw.githubusercontent.com/LouFokke/TPOP_lou_et_melo_OwO/refs/heads/main/Labo1/analyse_image/"
-nom_fichier_1 = "Reslice of 0_sans_def_01.txt"
+nom_fichier_1 = "Reslice of Brass_sans_def.txt"
 chemin_fichier_1 = url + nom_fichier_1
 print(f"Téléchargement des données depuis : {chemin_fichier_1}")
 
@@ -50,7 +50,7 @@ plt.show()
 # SECTION 3 : Acquisition et Prétraitement des Données du Fichier 2 (Déformé)
 # ==============================================================================
 # 🔧 Modifier ici le nom du fichier 2 si besoin
-nom_fichier_2 = "Reslice of 5_pli_1.txt"
+nom_fichier_2 = "Reslice of Brass_thight_hole_1.txt" #ajouter un curve-fit ici au lieu d'un autre fichier texte!!!
 chemin_fichier_2 = url + nom_fichier_2
 print(f"Téléchargement des données depuis : {chemin_fichier_2}")
 
@@ -174,7 +174,7 @@ plt.plot(positions, mean_diff, color='red', lw=2, label="Différence Moyenne")
 
 plt.xlabel("Position (normalisée)")
 plt.ylabel("Écart Absolu")
-plt.ylim(0, 0.2)  # Axe Y fixe de 0 à 1
+plt.ylim(0, 0.4)  # Axe Y fixe de 0 à 1
 # 🔧 Modifier ici le titre du graphique si besoin
 plt.title("Quantification des Écarts Absolus entre\n les Courbes Alignées")
 plt.legend()
