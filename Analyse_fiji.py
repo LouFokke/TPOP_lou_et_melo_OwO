@@ -4,6 +4,9 @@ import requests
 import io
 from scipy.optimize import least_squares
 
+# Augmenter la taille globale de la police
+plt.rcParams.update({'font.size': 20})
+
 # ==============================================================================
 # SECTION 1 : Acquisition et Prétraitement des Données du Fichier 1 (Référence)
 # ==============================================================================

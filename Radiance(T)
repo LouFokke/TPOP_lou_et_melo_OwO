@@ -1,0 +1,43 @@
+import numpy as np
+from scipy import integrate
+from scipy import constants
+
+# Définir les constantes physiques
+h = constants.h  # Constante de Planck (J s)
+c = constants.c  # Vitesse de la lumière dans le vide (m/s)
+k = constants.k  # Constante de Boltzmann (J/K)
+
+# Définir la loi de Planck en fonction de la longueur d'onde (lambda en mètres, T en Kelvin)
+def planck_spectral_radiance(wavelength, temperature):
+    """
+    Calcul la densité spectrale de luminance énergétique (radiance spectrale)
+    selon la loi de Planck.
+    """
+    numerator = 2 * h * c**2
+    denominator = wavelength**5 * (np.exp((h * c) / (wavelength * k * temperature)) - 1)
+    return numerator / denominator
+
+# Définir la plage de longueurs d'onde (en mètres)
+lambda_min = 900e-9  # 900 nm en mètres
+lambda_max = 1700e-9 # 1700 nm en mètres
+
+def calculate_radiance_kelvin(temperature_kelvin):
+    """
+    Calcul la radiance totale dans la plage de longueurs d'onde spécifiée
+    pour une température donnée en Kelvin en utilisant l'intégration numérique.
+    """
+    result, error = integrate.quad(planck_spectral_radiance, lambda_min, lambda_max, args=(temperature_kelvin,))
+    return result
+
+if __name__ == "__main__":
+    try:
+        temperature_celsius = float(input("Entrez la température en degrés Celsius (°C) : "))
+        # Convertir la température Celsius en Kelvin
+        temperature_kelvin = temperature_celsius + 273.15
+        if temperature_kelvin <= 0:
+            print("La température en Kelvin doit être positive.")
+        else:
+            radiance = calculate_radiance_kelvin(temperature_kelvin)
+            print(f"La radiance dans la plage de 900 nm à 1700 nm pour une température de {temperature_celsius:.2f} °C (soit {temperature_kelvin:.2f} K) est : {radiance:.12f} W/(m^2 sr)")
+    except ValueError:
+        print("Veuillez entrer une valeur numérique pour la température.")
