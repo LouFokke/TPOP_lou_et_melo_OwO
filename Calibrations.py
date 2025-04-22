@@ -72,12 +72,12 @@ try:
         print(f"R² = {r_squared:.4f}")
 
         # Tracer les données expérimentales
-        ax1.plot(x, y, 'o', label=f"Données exp. {y_col} vs {x_col}")
+        ax1.plot(x, y, 'o', label=f"Données exp.")
 
         # Tracer la courbe ajustée
         x_fit = np.linspace(min(x), max(x), 500)
         y_fit = eq_chaleur(x_fit - x_min + 1e-6, *popt)
-        ax1.plot(x_fit, y_fit, '--', label=f"Modèle ({y_col}) R² = {r_squared:.3f}")
+        ax1.plot(x_fit, y_fit, '--', label=f"Modèle R² = {r_squared:.3f}")
 
         # Affichage de la formule corrigée sur le graphique
         equation_text = f"$y = \log_{{{popt[0]:.3f}}}(x - {x_min:.3f} + {popt[1]:.3f}) + {popt[2]:.3f}$"
@@ -85,8 +85,8 @@ try:
                  verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="white"))
 
     # Ajouter des labels
-    ax1.set_xlabel("Variable X")
-    ax1.set_ylabel("Variable Y")
+    ax1.set_xlabel("ADU")
+    ax1.set_ylabel("Température (C)")
 
     # Ajouter une légende
     ax1.legend(title="Légende")
