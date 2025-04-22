@@ -4,6 +4,9 @@ import requests
 import io
 from scipy.optimize import least_squares
 
+# Augmenter la taille globale de la police (par défaut environ 10, ici on passe à 20)
+plt.rcParams.update({'font.size': 20})
+
 # ==============================================================================
 # SECTION 1 : Acquisition et Prétraitement des Données du Fichier 1 (Référence)
 # ==============================================================================
@@ -28,7 +31,7 @@ positions = np.linspace(0, 1, n_position)
 # ==============================================================================
 # SECTION 2 : Visualisation des Données du Fichier 1 (Référence)
 # ==============================================================================
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(8, 6))
 for t in range(n_time):
     plt.plot(positions, data_norm[t, :], color='black', alpha=0.3)
 moyenne_norm = np.mean(data_norm, axis=0)
@@ -37,7 +40,7 @@ plt.plot(positions, moyenne_norm, color='red', lw=2, label="Courbe Moyenne")
 plt.xlabel("Position (normalisée)")
 plt.ylabel("Intensité (normalisée)")
 # 🔧 Modifier ici le titre du graphique si besoin
-plt.title("Itensité de la radiation de la plaque en focntion du temps et de la position sans déformation")
+plt.title("Intensité de la radiation de la plaque en fonction\n du temps et de la position sans déformation")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -73,7 +76,7 @@ data_norm = data_norm[:, :common_n_position]
 data2_norm = data2_norm[:, :common_n_position]
 positions = np.linspace(0, 1, common_n_position)
 
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(8, 6))
 for t in range(n_time):
     plt.plot(positions, data2_norm[t, :], color='black', alpha=0.3)
 moyenne2_norm = np.mean(data2_norm, axis=0)
@@ -82,7 +85,7 @@ plt.plot(positions, moyenne2_norm, color='red', lw=2, label="Courbe Moyenne")
 plt.xlabel("Position (normalisée)")
 plt.ylabel("Intensité (normalisée)")
 # 🔧 Modifier ici le titre du graphique si besoin
-plt.title("Itensité de la radiation de la plaque en focntion du temps et de la position avec déformation")
+plt.title("Intensité de la radiation de la plaque en fonction\n du temps et de la position avec déformation")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -141,16 +144,16 @@ for t in range(n_curve):
 # ==============================================================================
 # SECTION 5 : Visualisation par Paires des Courbes Alignées
 # ==============================================================================
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(8, 6))
 for t in range(n_curve):
     plt.plot(positions, data_norm[t, :], color='black', alpha=0.3, 
              label="Référence" if t == 0 else "")
-    plt.plot(positions, aligned_data2_individual[t, :], color='red', alpha=0.3, 
+    plt.plot(positions, aligned_data2_individual[t, :],'-', color='red', alpha=0.3, 
              label="Déformé" if t == 0 else "")
 plt.xlabel("Position (normalisée)")
 plt.ylabel("Intensité (normalisée)")
 # 🔧 Modifier ici le titre du graphique si besoin
-plt.title("Superposition des Courbes Alignées - Référence vs Déformé")
+plt.title("Superposition des Courbes Alignées\n Référence vs 5 plis")
 plt.legend()
 plt.tight_layout()
 plt.show()
@@ -158,7 +161,7 @@ plt.show()
 # ==============================================================================
 # SECTION 6 : Quantification des Écarts Absolus Entre Paires
 # ==============================================================================
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(8, 6))
 all_diff = []
 
 for t in range(n_curve):
@@ -171,9 +174,9 @@ plt.plot(positions, mean_diff, color='red', lw=2, label="Différence Moyenne")
 
 plt.xlabel("Position (normalisée)")
 plt.ylabel("Écart Absolu")
-plt.ylim(0, 1)  # Axe Y fixe de 0 à 1
+plt.ylim(0, 0.2)  # Axe Y fixe de 0 à 1
 # 🔧 Modifier ici le titre du graphique si besoin
-plt.title("Quantification des Écarts Absolus entre les Courbes Alignées")
+plt.title("Quantification des Écarts Absolus entre\n les Courbes Alignées")
 plt.legend()
 plt.tight_layout()
 plt.show()
