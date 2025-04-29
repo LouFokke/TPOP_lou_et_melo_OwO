@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
-plt.rcParams.update({'font.size': 20})
+plt.rcParams.update({'font.size': 25})
 
 # Fonction de chaleur
 def eq_chaleur(x, m, b, c):
@@ -57,8 +57,8 @@ try:
     y_fit = eq_chaleur(x_fit - x_min + 1e-6, *popt)
     ax1.plot(x_fit, y_fit, '--', label=f"Modèle R² = {r_squared:.3f}")
 
-    equation_text = f"$y = \log_{{{popt[0]:.3f}}}(x - {x_min:.3f} + {popt[1]:.3f}) + {popt[2]:.3f}$"
-    ax1.text(0.05, 0.95, equation_text, transform=ax1.transAxes, fontsize=16,
+    equation_text = f"$y = \log_{{{popt[0]:.3f}}}(x - {x_min+popt[1]:.3f}) {popt[2]:.3f}$"
+    ax1.text(0.05, 0.95, equation_text, transform=ax1.transAxes, fontsize=20,
              verticalalignment='top', bbox=dict(boxstyle="round,pad=0.3", edgecolor="black", facecolor="white"))
 
     ax1.set_xlabel("ADU")
@@ -70,7 +70,7 @@ try:
     # === Partie 2 : utiliser la formule ===
     m, b, c = popt
     print("\n--- Utilisation de la formule ajustée ---")
-    print(f"Formule : y = log_{m:.3f}(x - {x_min:.3f} + {b:.3f}) + {c:.3f}")
+    print(f"Formule : y = log_{m:.3f}(x - {(x_min+b):.3f}) {c:.3f}")
     print("Entrez 'q' pour quitter.\n")
 
     def utiliser_formule(x):
